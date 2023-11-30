@@ -13,7 +13,7 @@
  * through `given`.
  *
  * Givens supercede implicits in Scala 2.x, but mostly, are just a different
- * (and slightly cleaned up)
+ * (and slightly cleaned up) syntax.
  */
 package net.degoes.advancedscala
 
@@ -56,6 +56,8 @@ object basics:
    *
    * Create a `using` clause in this method that requests a `Reader` and uses it
    * to read a string from the console.
+   * 
+   * Note that `using` clauses can optionally name their parameters.
    */
   def usingReader(): String = ???
 
@@ -65,6 +67,23 @@ object basics:
    * Create a "named" given by using the syntax `given <name>: <type> = `.
    */
   given foo: Reader = ???
+
+  /**
+    * EXERCISE 4
+    * 
+    * You can force Scala to deduce a given by using the syntax `summon[<type>]`.
+    * Write your own version of summon below. 
+    * 
+    * HINT: You will have to name the `using` parameter.
+    */
+  def mySummon[A](using A): A = ???
+
+  /**
+    * EXERCISE 5
+    * 
+    * Demonstrate how you use `mySummon` to summon a `Printer`.
+    */
+  val printer: Printer = ???
 
 /**
  * TYPECLASSES
