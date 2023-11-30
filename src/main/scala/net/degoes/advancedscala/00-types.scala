@@ -10,6 +10,8 @@
  */
 package net.degoes.advancedscala.types
 
+import net.degoes.advancedscala.types.dependent.Message.GetTemp
+
 /**
  * VALUES
  *
@@ -38,7 +40,7 @@ object values:
    * Experiment with describing different values. Both literals (constant
    * primitives), and values produced thorough complex expressions.
    */
-  lazy val y = ???
+  lazy val y = xs.map(_ + x).sum
 
   /**
    * EXERCISE 2
@@ -47,7 +49,7 @@ object values:
    * variable? HINT: Think about all the elements in this Scala source code file
    * that are NOT values.
    */
-  lazy val z = ???
+  lazy val z = ??? 
 
 /**
  * SETS
@@ -69,7 +71,7 @@ object set_theory:
    * Make a set of booleans using many different expressions to produce
    * booleans.
    */
-  lazy val s1: Set[Boolean] = ???
+  lazy val s1: Set[Boolean] = Set(true || false, false && false, !true, !false)
 
   /**
    * EXERCISE 2
@@ -85,14 +87,14 @@ object set_theory:
    * Union two sets together. Ensure that each set has some unique items, but
    * that both sets have some shared items.
    */
-  val s2: Set[Int] = Set() union Set()
+  val s2: Set[Int] = Set(1, 2, 3) union Set(3, 4, 5)
 
   /**
    * EXERCISE 4
    *
    * What is the size of the set you constructed? Can you explain this size?
    */
-  assert(s2.size == (??? : Int))
+  assert(s2.size == 5)
 
   /**
    * EXERCISE 5
@@ -100,14 +102,14 @@ object set_theory:
    * Intersect two sets together. Ensure that each set has some unique items,
    * but that both sets have some shared items.
    */
-  val s3: Set[Int] = Set() intersect Set()
+  val s3: Set[Int] = Set(1, 2, 3) intersect Set(3, 4, 5)
 
   /**
    * EXERCISE 6
    *
    * What is the size of the set you constructed? Can you explain this size?
    */
-  assert(s3.size == (??? : Int))
+  assert(s3.size == 1)
 
   /**
    * EXERCISE 7
@@ -115,14 +117,14 @@ object set_theory:
    * Subtract one set from another. Ensure that each set has some unique items,
    * but that both sets have some shared items.
    */
-  val s4: Set[Int] = Set() diff Set()
+  val s4: Set[Int] = Set(1, 2, 3) diff Set(2, 3)
 
   /**
    * EXERCISE 8
    *
    * What is the size of the set you constructed? Can you explain this size?
    */
-  assert(s4.size == (??? : Int))
+  assert(s4.size == 1)
 
   /**
    * EXERCISE 9
@@ -131,15 +133,15 @@ object set_theory:
    * related at all. Implement subsetOf and supersetOf, which determine if one
    * set is a subset or superset of another set.
    */
-  def subsetOf[A](s1: Set[A], s2: Set[A]): Boolean   = ???
-  def supersetOf[A](s1: Set[A], s2: Set[A]): Boolean = ???
+  def subsetOf[A](s1: Set[A], s2: Set[A]): Boolean   = s1.forall(s2.contains(_))
+  def supersetOf[A](s1: Set[A], s2: Set[A]): Boolean = subsetOf(s2, s1)
 
   /**
    * EXERCISE 10
    *
    * What set is a subset of all other sets? The answer may surprise you.
    */
-  val s5: Set[Int] = ???
+  val s5: Set[Int] = Set()
 
   /**
    * EXERCISE 11
@@ -147,7 +149,7 @@ object set_theory:
    * What set is a superset of all other sets? Can you express this set in
    * Scala?
    */
-  lazy val s6: Set[Int] = ???
+  lazy val s6: Set[Any] = ???
 
 /**
  * TYPES
@@ -167,21 +169,22 @@ object types:
    *
    * If Boolean defines a set of values, what are these values?
    */
-  val bool: Set[Boolean] = ???
+  val bool: Set[Boolean] = Set(true, false)
 
   /**
    * EXERCISE 2
    *
    * If Unit defines a set of values, what are these values?
    */
-  val unit: Set[Unit] = ???
+  val unitValue = ()
+  val unit: Set[Unit] = Set(unitValue)
 
   /**
    * EXERCISE 3
    *
    * If Nothing defines a set of values, what are these values?
    */
-  val nothing: Set[Nothing] = ???
+  val nothing: Set[Nothing] = Set.empty[Nothing]
 
   /**
    * EXERCISE 4
@@ -241,14 +244,16 @@ object basic:
    * Using summon and `=:=`, or a generic function, try to prove that Scala does
    * not see the types `Type1` and `Type2` as being equal.
    */
-  summon[Int =:= Int]
+  summon[Email =:= String]
 
   /**
    * EXERCISE 3
    *
    * Which declaration keywords introduce a new type into Scala's type system?
    */
-  val keywords = Set("trait", "???")
+  val keywords = Set("trait", "class", "enum")
+
+  type Email = String 
 
   /**
    * EXERCISE 4
@@ -261,11 +266,11 @@ object basic:
    * `extends`.
    */
   trait Anything
-  trait Animal
-  trait Dog
-  trait Cat
-  trait Schnauzer
-  trait Persian
+  trait Animal extends Anything
+  trait Dog extends Animal 
+  trait Cat extends Animal 
+  trait Schnauzer extends Dog 
+  trait Persian extends Cat 
 
   trait PetStore {
     def buy(): Animal
@@ -283,7 +288,9 @@ object basic:
    * Create a type of pet store that only allows you to buy dogs, but have it
    * implement the `PetStore` interface.
    */
-  object DogStore
+  object DogStore extends PetStore {
+    override def buy(): Schnauzer = new Schnauzer {}
+  }
 
   trait DogHotel {
     def checkin: Dog => Unit
@@ -301,7 +308,11 @@ object basic:
    * Unlike return values, this relationship weirdly does not apply to methods
    * (even though it could apply to methods).
    */
-  object AnimalHotel
+  object AnimalHotel extends DogHotel {
+    override def checkin: Animal => Unit = 
+      a => println(s"Checked in: ${a}")
+  }
+
 
   /**
    * EXERCISE 7
@@ -310,7 +321,7 @@ object basic:
    * Note: This is true for any type!
    */
   trait Foo
-  summon[Int =:= Int]
+  summon[Foo <:< Foo]
 
   /**
    * EXERCISE 8
@@ -321,6 +332,7 @@ object basic:
   trait Reddish extends Color
   summon[Reddish <:< Reddish]
   summon[Reddish <:< Color]
+  summon[Reddish <:< Any]
 
   /**
    * EXERCISE 9
@@ -329,7 +341,8 @@ object basic:
    * hierarchy. Use `summon` and `<:<` to prove that `Any` is a supertype of
    * several types.
    */
-  summon[Any <:< Any]
+  summon[Int <:< Any]
+  summon[(Int => String) <:< Any]
 
   /**
    * EXERCISE 10
@@ -341,7 +354,41 @@ object basic:
    * Try to think about what it means to have a type that is the subtype of all
    * other types. Could we create a value of type `Nothing`? Why or why not?
    */
+  val x: Nothing = ??? 
   summon[Nothing <:< Nothing]
+
+  trait Wrapper[+A]
+
+  // Invariant type parameter:
+  //  If A <: B, then Wrapper[A] is NOT related to Wrapper[B]
+
+  // Covariant type parameter:
+  //  If A <: B, then Wrapper[A] <: Wrapper[B]
+
+  // Contravariant type parameter:
+  //  If A <: B, then Wrapper[A] >: Wrapper[B]
+
+  type StringFunction[A] = Function1[A, String]
+
+  def map[A](list: List[A], f: StringFunction[A]): List[String] = 
+    list.map(f)
+
+  val animalToString: StringFunction[Animal] = _.toString()
+
+  map[Schnauzer](List(new Schnauzer {}), animalToString)
+
+  def acceptWrapper(wrapper: Wrapper[Animal]) = ???
+
+  def acceptList(animals: List[Animal]) = ???
+
+  val dogWrapper: Wrapper[Dog] = new Wrapper[Dog]{}
+
+  val dogList: List[Dog] = List(new Schnauzer {})
+
+  acceptList(dogList)
+
+  acceptWrapper(dogWrapper)
+    
 
 /**
  * STRUCTURAL TYPING
@@ -352,14 +399,14 @@ object basic:
  */
 object structural:
   type S1 = { def foo: Int }
-  type S2 = { def foo: Int }
+  type S2 = { def foo: Int; def bar: String }
 
   /**
    * EXERCISE 1
    *
    * Using `summon` and `=:=`, prove that `S1` and `S2` are equal.
    */
-  summon[Int =:= Int]
+  summon[S2 <:< S1]
 
   /**
    * EXERCISE 2
@@ -367,7 +414,11 @@ object structural:
    * Make the class `A` a subtype of S1. What happens if you try the `extends`
    * keyword?
    */
-  class A
+  class A {
+    def foo: Int = 42
+  }
+
+  val s1: S1 = new A{}
 
   /**
    * EXERCISE 3
@@ -382,10 +433,20 @@ object structural:
    */
   trait Straw; trait Wood; trait Cement; trait Steel
   trait HouseBuilder {
-    type Walls
-    type Foundations
+    type Walls <: Any
+    type Foundations <: Any
   }
-  type ShoddyHouseBuilder
+  type ShoddyHouseBuilder = 
+    HouseBuilder {
+      type Walls = Straw
+      type Foundations = Straw
+    }
+
+  type SomewhatShoddyHouseBuilder[W] = 
+    HouseBuilder {
+      type Walls = W
+      type Foundations = Straw
+    }
 
   /**
    * EXERCISE 4
@@ -393,7 +454,7 @@ object structural:
    * Test that, indeed, ShoddyHouseBuilder is a subtype of HouseBuilder.
    */
   val shoddyHouseBuilder: ShoddyHouseBuilder = ???
-  val houseBuilder: HouseBuilder             = ???
+  val houseBuilder: HouseBuilder             = shoddyHouseBuilder
 
 /**
  * TYPE OPERATORS
@@ -419,7 +480,9 @@ object operators:
     def b() = println("b")
   }
   type C = A & B
-  val c: C = ???
+  val c: A & B = new A with B {}
+
+  summon[(A & B) =:= (B & A)]
 
   /**
    * EXERCISE 2
@@ -430,7 +493,7 @@ object operators:
    *
    * Using `summon` and `=:=`, prove that `A & Any` is equal to `A`.
    */
-  def proof1[A] = summon[A =:= A]
+  def proof1[A] = summon[A =:= A & Any]
 
   /**
    * EXERCISE 3
@@ -443,7 +506,7 @@ object operators:
    */
   object A extends A
   object B extends B
-  def either(): A | B = ???
+  def either(): A | B = B
 
   /**
    * EXERCISE 4
@@ -476,6 +539,16 @@ object dependent:
     def build(): (Walls, Foundations)
   }
 
+  val builder: Builder = new Builder {
+    type Walls = String
+    type Foundations = String 
+
+    def build() = ("Walls", "Foundations")
+  }
+
+  val (walls: builder.Walls, foundations: builder.Foundations) = 
+    builder.build()
+
   object SturdyBuilder extends Builder {
     type Walls       = Cement
     type Foundations = Cement
@@ -495,7 +568,8 @@ object dependent:
    * Test to see if Scala thinks that `l.Walls` is the same type as `r.Walls`.
    * Can you explain this answer?
    */
-  def test1(l: Builder, r: Builder) = ???
+  def test1(l: Builder, r: Builder) = 
+    summon[l.Walls =:= l.Walls]
 
   /**
    * EXERCISE 2
@@ -503,7 +577,7 @@ object dependent:
    * Test to see if `ShoddyBuilder.Walls` is the same type as
    * `SturdyBuilder.Walls`. Can you explain this answer?
    */
-  summon[Int =:= Int]
+  summon[ShoddyBuilder.Walls =:= ShoddyBuilder.Walls]
 
   /**
    * EXERCISE 3
@@ -512,7 +586,7 @@ object dependent:
    * `ref1` is a reference to `ShoddyBuilder`. Can you explain this answer?
    */
   val ref1 = SturdyBuilder
-  summon[SturdyBuilder.Walls =:= SturdyBuilder.Walls]
+  summon[SturdyBuilder.Walls =:= ref1.Walls]
 
   /**
    * EXERCISE 3
@@ -520,8 +594,11 @@ object dependent:
    * Give an explicit type to `ref2` of `Builder`. What happens, and how can you
    * explain this? How can you fix this?
    */
-  val ref2 = SturdyBuilder
+  val ref2: SturdyBuilder.type = SturdyBuilder
   summon[SturdyBuilder.Walls =:= ref2.Walls]
+
+  case class Time(now: Long)
+  case class Temp(temp: Double)
 
   /**
    * EXERCISE 4
@@ -529,7 +606,20 @@ object dependent:
    * Sketch out an actor system, where each input message is typed, and
    * generates an output message, whose type depends on the input message.
    */
-  trait Message
-  trait Actor {
-    def send(message: Message): Unit = ???
+  sealed trait Message {
+    type Out 
   }
+  object Message {
+    object GetTime extends Message {
+      type Out = Time 
+    }
+    object GetTemp extends Message {
+      type Out = Temp
+    }
+  }
+  trait Actor {
+    def send(message: Message): message.Out = ???
+  }
+  def testActor(actor: Actor) = 
+    val time: Time = actor.send(Message.GetTime)
+    val temp: Temp = actor.send(Message.GetTemp)

@@ -28,7 +28,16 @@ object vectors:
    * element to the end of a vector, and tracks the size of the resulting vector
    * at compile-time by using compile-time operations.
    */
-  final class Vector[N <: Int & Singleton, A] private (private val values: Array[A])
+  final class Vector[N <: Int & Singleton, A] private (private val values: Array[A]) {
+    def ++ [M <: Int & Singleton](that: Vector[M, A])(using ClassTag[A]): Vector[(N + M) & Singleton, A] = 
+      new Vector(values ++ that.values)
+
+    def :+ (a: A)(using ClassTag[A]): Vector[(N + 1) & Singleton, A] = 
+      new Vector(values :+ a)
+  }
+
+  val x1 = Vector(1, 2) ++ Vector(3, 4)
+  val x2 = x1 :+ 5
 
   object Vector:
     def empty[A: ClassTag]: Vector[0, A] = new Vector(Array.empty[A])
