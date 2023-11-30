@@ -10,8 +10,6 @@
  */
 package net.degoes.advancedscala.types
 
-import dotty.tools.dotc.printing.Highlighting.Red
-
 /**
  * VALUES
  *
